@@ -2,14 +2,23 @@ import "./App.css";
 import React, { useEffect, useState } from "react";
 import { Alert, Button, Grid, TextField, Typography } from "@mui/material";
 import axios from "axios";
+import Checkbox from "@mui/material/Checkbox";
 
 const apiBonitaSoft = "http://localhost:8083/createProcess";
 
-const sendServices = async (values, setMessage, setSeverity) => {
-  console.log(values);
+const sendServices = async (
+  values,
+  setMessage,
+  setSeverity,
+  aprobada,
+  pagada
+) => {
   try {
+    values.aprobada = aprobada;
+    values.pagada = pagada;
+
     const result = await axios.post(apiBonitaSoft, {
-      publicar: values,
+      publicacionesInput: values,
     });
     setSeverity("success");
     setMessage("Mensaje enviado correctamente");
@@ -24,15 +33,25 @@ const sendServices = async (values, setMessage, setSeverity) => {
 const handleChange = (values, setValues) => (prop) => (event) => {
   setValues({ ...values, [prop]: event.target.value });
 };
+
 function App() {
   const [message, setMessage] = useState("");
   const [severity, setSeverity] = useState("");
+  const [aprobada, setAprobada] = useState(false);
+  const [pagada, setPagada] = useState(false);
+
+  const handleChangeAprobada = () => {
+    setAprobada(!aprobada);
+  };
+  const handleChangePagada = () => {
+    setPagada(!pagada);
+  };
   const initial = {
     ano: "",
-    aprobada: "",
+    aprobada: aprobada,
     color: "",
     kms: "",
-    pagada: "",
+    pagada: pagada,
     placa: "",
     precio: "",
     persistenceVersion: "",
@@ -43,12 +62,12 @@ function App() {
     tipodevehiculo: "",
     tipousuario: "",
     tipoplan: "",
-    calificacion: ""
+    calificacion: "",
   };
   const [values, setValues] = useState(initial);
 
   const onSubmit = () => {
-    sendServices(values, setMessage, setSeverity);
+    sendServices(values, setMessage, setSeverity, aprobada, pagada);
   };
   const clear = () => {
     setMessage("");
@@ -153,23 +172,17 @@ function App() {
           />
         </Grid>
         <Grid item xs={4}>
-          <TextField
-            id="outlined-search"
-            value={values.aprobada}
-            label="Aprobada"
-            onChange={handleChange(values, setValues)("aprobada")}
-            type="number"
-          />
+          <Typography variant="body1" component="div" gutterBottom>
+            Aprobada
+          </Typography>
+          <Checkbox checked={aprobada} onChange={handleChangeAprobada} />
         </Grid>
 
         <Grid item xs={4}>
-          <TextField
-            id="outlined-search"
-            value={values.pagada}
-            label="Pagada"
-            onChange={handleChange(values, setValues)("pagada")}
-            type="number"
-          />
+          <Typography variant="body1" component="div" gutterBottom>
+            Pagada
+          </Typography>
+          <Checkbox checked={pagada} onChange={handleChangePagada} />
         </Grid>
         <Grid item xs={4}>
           <TextField
